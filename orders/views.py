@@ -20,12 +20,33 @@ class OrderViewSet(viewsets.ViewSet):
         return Response(res)
 
     def create(self, request):
-        serializer = OrderSerializer(data=request.data)
+        serializer=OrderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            res = {"success": True, "message": 'Data saved.', "data": serializer.data}
+            orderItems= request.data["order_items"]
+            order=Order.objects.get(id=serializer.data["id"])
+            for orderItem in orderItems:
+                product =None
+                if(orderItem["product"]!= None):
+                    product=Product.objects.get(id=orderItem["product"]["id"])
+                
+                OrderItem.objects.create(
+                    quantity=orderItem["quantity"],
+                    price=orderItem["price"],
+                    order=order,
+                    product=product
+                    )
+            order.save()
+
+            order = Order.objects.get(id=order.id)
+            serializer = OrderOutSerializer(order)
+            data={"order":serializer.data}
+
+            res={"success":True,"message":'Data saved.',"data":data}
             return Response(res, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def update(self, request, pk, *args, **kwargs):
         instance = get_object_or_404(self.queryset, pk=pk)

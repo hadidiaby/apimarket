@@ -9,6 +9,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
+class OrderOutSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True, read_only=True)
     class Meta:
         model = Order
