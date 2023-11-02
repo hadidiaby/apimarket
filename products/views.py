@@ -22,6 +22,14 @@ class CityViewSet(viewsets.ViewSet):
         res = {"success": True, "message": "", "data": serializer.data}
         return Response(res)
 
+    @action(detail=True, methods=['get'])   
+    def products(self, request, pk=None):
+        city = get_object_or_404(self.queryset, pk=pk)
+        products = city.products.all()
+        serializer = ProductReadOnlySerializer(products, many=True)
+        res = {"success": True, "message": "", "data": serializer.data}
+        return Response(res)
+
     def create(self, request):
         serializer = CitySerializer(data=request.data)
         if serializer.is_valid():
@@ -53,7 +61,7 @@ class ProductViewSet(viewsets.ViewSet):
     queryset = Product.objects.all()
 
     def list(self, request):
-        serializer = ProductSerializer(Product.objects.all(), many=True)
+        serializer = ProductReadOnlySerializer(Product.objects.all(), many=True)
         res = {"success": True, "message": "", "data": serializer.data}
         return Response(res)
 
@@ -76,7 +84,7 @@ class ProductViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         obj = get_object_or_404(self.queryset, pk=pk)
-        serializer = ProductSerializer(obj)
+        serializer = ProductReadOnlySerializer(obj)
         data = {"product": serializer.data}
         res = {"success": True, "message": 'Data found', "data": data}
         return Response(res)

@@ -14,3 +14,11 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+class ProductReadOnlySerializer(serializers.ModelSerializer):
+    cityName = serializers.SerializerMethodField('getcityName')
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+    def getcityName(self,product):
+        return product.city.name
