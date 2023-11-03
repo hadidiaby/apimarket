@@ -10,6 +10,8 @@ from rest_framework.decorators import api_view, action
 from django.contrib.auth import login, logout,authenticate
 from django.contrib.auth.models import User
 
+from orders.serializers import OrderOutSerializer
+
 from .models import *
 from .serializers import *
 
@@ -89,6 +91,13 @@ class CustomUserViewSet(viewsets.ViewSet):
 
     def list(self, request):
         serializer = CustomUserSerializer(CustomUser.objects.all(), many=True)
+        res = {"success": True, "message": '', "data": serializer.data}
+        return Response(res)
+    
+    @action(detail=True,methods=['get'])
+    def orders(self, request,pk=None):
+        obj = get_object_or_404(self.queryset, pk=pk)
+        serializer = OrderOutSerializer(obj.orders.all(), many=True)
         res = {"success": True, "message": '', "data": serializer.data}
         return Response(res)
     

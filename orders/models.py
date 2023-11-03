@@ -5,9 +5,19 @@ from products.models import Product
 # Create your models here.
     
 
+class StorePlace(models.Model):
+    name = models.CharField(max_length=200)
+    address = models.CharField(max_length=200)
+    def __str__(self):
+        return str(self.name)
+    
+
+
 class Order(models.Model):
     ordering_date= models.DateTimeField(auto_now_add=True)
-    ordered_by = models.ForeignKey(CustomUser,on_delete=models.SET_NULL,null=True,blank=True)
+    ordered_by = models.ForeignKey(CustomUser,related_name='orders',on_delete=models.SET_NULL,null=True,blank=True)
+    shipping_place = models.ForeignKey(StorePlace,related_name='orders',on_delete=models.SET_NULL,null=True,blank=True)
+    status = models.IntegerField(default=0)
     def __str__(self):
         return str(self.ordering_date)
     
